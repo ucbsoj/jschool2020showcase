@@ -2,3 +2,4 @@ credentials.txt
 node_modules
 src/partials/*.html
 dist
+.DS_Store
