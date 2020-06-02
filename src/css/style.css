@@ -16,34 +16,34 @@ html,body{
     height:100%;
 }
 
-.slick .slide-inner.bg-10{
+.bg-10{
     background-color: rgba(0,0,0,0.10);
 }
 
-.slick .slide-inner.bg-20{
+.bg-20{
     background-color: rgba(0,0,0,0.20);
 }
-.slick .slide-inner.bg-30{
+.bg-30{
     background-color: rgba(0,0,0,0.30);
 }
-.slick .slide-inner.bg-40{
+.bg-40{
     background-color: rgba(0,0,0,0.40);
 }
-.slick .slide-inner.bg-50{
+.bg-50{
     background-color: rgba(0,0,0,0.50);
 }
-.slick .slide-inner.bg-60{
+.bg-60{
     background-color: rgba(0,0,0,0.60);
 }
-.slick .slide-inner.bg-70{
+.bg-70{
     background-color: rgba(0,0,0,0.70);
 }
-.slick .slide-inner.bg-80{
+.bg-80{
     background-color: rgba(0,0,0,0.80);
 }
-.slick .slide-inner.bg-90{
+.bg-90{
     background-color: rgba(0,0,0,0.90);
 }
-.slick .slide-inner.bg-100{
+.bg-100{
     background-color: rgba(0,0,0,1);
 }
