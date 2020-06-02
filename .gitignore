@@ -1,0 +1,4 @@
+credentials.txt
+node_modules
+src/partials/*.html
+dist

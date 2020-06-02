@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <title>Berkeley J-School 2020 Showcase</title>
+  </head>
+  <body>
+
+
+    <!-- Showcase projects encrypted -->
+    <div id="content" class="container-fluid px-0">
+      <script>
+      var _payload = "<%= projects %>".split("|");
+      </script>
+    </div>
+
+
+
+    <div id="lockquestion" class="container-fluid">
+      <form id="encryptionform" class="d-flex flex-column align-items-center justify-content-center vh-100 mx-0 my-0">
+        <div>
+          <div class="row form-group">
+            <div class="col-12">
+              <h3 class="text-center">
+                <label for="unlock" class="display-4">Berkeley J-School Showcase 2020</label>
+              </h3>
+            </div>
+          </div>
+          <div class="row form-group col-12 col-sm-8 offset-sm-2">
+            <div class="input-group">
+              <input type="password" class="form-control" id="unlock" placeholder="enter password and press unlock">
+              <div class="input-group-append">
+                <button id="unlockbutton" type="submit" class="btn btn-default input-group-text">Enter!</button>
+                <span class="input-group-text">
+                  <input id="remember" type="checkbox" aria-label="Checkbox to remember password"><small class="pl-2">Remember</small>
+                </span>
+              </div>
+            </div>
+
+            <br>
+            <div id="alert-warning">
+              
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+
+
+
+
+
+    <!-- Scripts. Remove those not needed -->
+    <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="js/randomize.js"></script>
+    <script type="text/javascript" src="js/bootstrap-4.3.1.bundle.min.js"></script>
+    <script type="text/javascript" src="js/slick.min.js"></script>
+    <script type="text/javascript" src="js/aes.js"></script>
+    <script type="text/javascript" src="js/hmac-sha256.js"></script>
+    <script type="text/javascript" src="js/pbkdf2.js"></script>
+    <script>
+
+
+      //set payload variable if it doesn't already exist.
+      var _payload = typeof _payload !== typeof undefined ? _payload : ['','',''];
+
+
+      const decryptPage = {
+        iv              : CryptoJS.enc.Base64.parse(_payload[0]),
+        salt            : CryptoJS.enc.Base64.parse(_payload[1]),
+        hmac            : CryptoJS.enc.Base64.parse(_payload[2]),
+        encoded_message : CryptoJS.enc.Base64.parse(_payload[3]),
+        message_base64  : _payload[3], //hmac comparison done on base64 string
+        key_size        : 256/32,
+        iterations      : 1000,
+        cookie_name     : "jschoolshowcase",
+        expiration      : new Date(new Date().getFullYear(), 7),
+        users_key       : "", //needs to be encoded in CryptoJS.enc.Hex.parse()
+
+
+
+        getCookieValue: function(){
+          //regex extracts cookie value only
+          let re = new RegExp(`(?:(?:^|.*;\\s*)${this.cookie_name}\\s*\\=\\s*([^;]*).*$)|^.*$`);
+          let cookie = document.cookie.replace(re, "$1");
+
+          if(cookie !== ""){
+            this.users_key = cookie;
+            return true;
+          }
+          return false;
+        },
+
+        saveCookie: function(){
+          document.cookie = `${this.cookie_name}=` + this.users_key.toString(CryptoJS.enc.Utf8) +'; expires=' + this.expiration.toUTCString() + 'max-age=15552000; path=/';
+        },
+
+
+        covertPasswordToKey: function(password){
+
+
+          //convert string password to PBKDF2 key. Save as Hexidecimal
+          this.users_key = CryptoJS.PBKDF2(
+              password, 
+              this.salt, 
+              { keySize: this.key_size, iterations: this.iterations }).toString();
+          
+        },
+
+        checkPasswordWithHMAC: function(){
+
+          //HMAC is a hash of the message using a password. 
+          //If we use their password and generate a sha256 hash of the message, it should
+          //match with the one sent over. 
+          let hmac_with_user_provided_password = CryptoJS.HmacSHA256(
+              this.message_base64, 
+              CryptoJS.enc.Utf8.parse(this.users_key))
+              .toString()
+              .trim();
+
+          return hmac_with_user_provided_password === this.hmac.toString() ? true : false;
+        },
+
+        unlockPage: function(){
+
+          //we use AES decrypt to actually perform the decryption process. 
+          let decrypted_message = CryptoJS.AES.decrypt(
+              {ciphertext: this.encoded_message},
+              CryptoJS.enc.Utf8.parse(this.users_key),
+              {iv:this.iv}
+            );
+
+
+          //return decrypted_message.toString(CryptoJS.enc.Utf8).trim(); //return string of message content
+          return CryptoJS.enc.Utf8.stringify(decrypted_message);
+        }
+
+      };
+
+
+      //when they click submit button
+      $("#encryptionform").on("submit", function(e){ 
+        e.preventDefault(); //no real form submit
+        kick_things_off();
+      });
+
+      if(decryptPage.getCookieValue()){
+        kick_things_off();
+      }
+
+
+
+      function kick_things_off(){
+        //first we convert plaintext password to cryptojs object.
+        //It will save it in decryptPage.users_key
+        if(decryptPage.users_key === ""){
+          decryptPage.covertPasswordToKey($("#unlock").val().toString());
+        }
+
+        //check if password HMAC matches, if so, password is good.
+        if(decryptPage.checkPasswordWithHMAC() === true){
+
+          if($("#remember").is(':checked')){
+            decryptPage.saveCookie();
+          }
+
+
+          $("#lockquestion").remove();
+          $("#content").html(decryptPage.unlockPage());
+          $("#content .slide.vh-100").randomize();
+          $('.slick').slick({autoplay:true, autoplaySpeed:10000, accessibility: true, arrows: true});
+
+        } else {
+
+          //remove existing cookie in case it was set
+          document.cookie = 'jschoolshowcase=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+          //show alert
+          if(!$("#alert-warning .alert").length){
+            var $div = $("<div />")
+              .addClass("alert alert-warning alert-dismissible mt-3")
+              .attr("role", "alert");
+            $div.append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+            $div.append('<span id="response">The password you entered did not work. Please try again.</span>');
+            $div.appendTo("#alert-warning");
+          }
+        }
+
+      };
+
+
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+@charset "utf-8";
+
+//Options here: https://getbootstrap.com/docs/4.4/getting-started/theming/#sass-options
+
+
+// Change default fonts for various font styles
+$font-family-sans-serif:  Lato, "Helvetica Neue", Arial, sans-serif !default;
+$font-family-serif:       "Crimson Text", "Times New Roman", Times, serif !default;
+$font-family-monospace:   "Ubuntu Mono", Menlo, Monaco, Consolas, "Courier New", monospace !default;
+
+
+//use RFS responsive font styles
+$enable-responsive-font-sizes: true;
+$enable-shadows: true;
+
+
+//adjust the default text color
+$text-color: #000;
+
+
+//Adjust headings styles
+$headings-font-family: 'Crimson Text', Georgia, 'Times New Roman', serif;
+$headings-font-weight: 400;
+$headings-color: #000;
+
+
+//Display fonts are when using class .display-1, .display-2
+$display1-weight: 400;
+$display2-weight: 400;
+$display3-weight: 400;
+$display4-weight: 400;
+
+
+//The .lead class is usually on <p> tags to make them more prominent
+$lead-font-weight: 400;
+
+
+//change the number of columns or gutter width
+$grid-columns:       12;
+$grid-gutter-width:  30px;
+
+
+//Breakpoints in which each measure will "snap" to a mobile view
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+);
+
+// Define the maximum width of `.container` for different screen sizes.
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px
+);
+
+//add additional spacers
+$spacer: 1rem !default;
+$spacers: () !default;
+$spacers: map-merge(
+   (
+     0: 0,
+     1: ($spacer * .25),    //4px
+     2: ($spacer * .5),     //8px
+     3: $spacer,            //16px
+     4: ($spacer * 1.5),    //24px
+     5: ($spacer * 3),      //48px
+     6: ($spacer * 4.5),      //64px
+     7: ($spacer * 9),      //80px
+     8: ($spacer * 12.5),   //100px
+     9: ($spacer * 18),    //120px
+     10: ($spacer * 21.5)  //150px
+   ),
+   $spacers
+);
+
+
+//expand utlities/sizing to include 25 and 50
+.vw-25 { width: 25vw !important; }
+.vh-25 { height: 25vh !important; }
+.vw-50 { width: 50vw !important; }
+.vh-50 { height: 50vh !important; }
+
+
+//import the bootstrap library (above variables will override these)
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+//import Google fonts (which are set in Gruntfile.js)
+@import "../fonts/fonts";
+
+//import Slick carosel
+@import "../assets/slick/slick";
+@import "../assets/slick/slick-theme";
+
+//import custom styles
+@import "../css/style";
