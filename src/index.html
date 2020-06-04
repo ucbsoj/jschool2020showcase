@@ -177,7 +177,7 @@
         } else {
 
           //remove existing cookie in case it was set
-          document.cookie = `${decryptPage.cookie_name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+          document.cookie = `${decryptPage.cookie_name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/`;
 
           //show alert
           if(!$("#alert-warning .alert").length){
